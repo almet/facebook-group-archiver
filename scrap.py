@@ -8,6 +8,7 @@ import hashlib
 
 from operator import attrgetter
 
+import bleach
 import dateutil.parser
 import requests
 from jinja2 import Environment, FileSystemLoader
@@ -23,7 +24,9 @@ class Author(object):
 
 class Comment(object):
     def __init__(self, item):
-        self.content = item['message'] if 'message' in item else None
+        self.content = None
+        self.picture = item['picture'] if 'picture' in item else None
+        self.content = bleach.linkify(item['message']) if 'message' in item else None
         self.author = Author(item['from'])
         self.date = dateutil.parser.parse(item['created_time'])
         self.likes = [Author(d) for d in item['likes']['data']] if 'likes' in item else []
@@ -31,9 +34,8 @@ class Comment(object):
 
 class Entry(object):
     def __init__(self, item):
-        if 'picture' in item:
-            self.picture = item['picture']
-        self.content = item['message'] if 'message' in item else None
+        self.picture = item['picture'] if 'picture' in item else None
+        self.content = bleach.linkify(item['message']) if 'message' in item else None
         self.author = Author(item['from']) if 'from' in item else None
         self.date = dateutil.parser.parse(item['created_time'])
         self.likes = [Author(d) for d in item['likes']['data']] if 'likes' in item else []
@@ -115,7 +117,7 @@ def parse_data(data):
 
 def download_pictures(entries, output_path):
     for entry in entries:
-        if hasattr(entry, 'picture'):
+        if entry.picture:
             new_url = download(entry.picture, os.path.join(output_path, 'pictures'))
             entry.picture = 'pictures/%s' % new_url
 
