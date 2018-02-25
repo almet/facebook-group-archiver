@@ -1,4 +1,4 @@
-# Facebook group exporter
+# Facebook group archiver
 
 This is a tool to generate an archive of a Facebook group's discussions.
 
