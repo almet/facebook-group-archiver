@@ -10,6 +10,9 @@ some point.
 This tool tries to solve this problem by generating an HTML website out of a
 Facebook group.
 
+**Unfortunately, you currently need to be an administrator of the group to
+run this archiver**. I believe this is how Facebook does data retention :/
+
 ## Dependencies
 
 To access your data through the Facebook API, Facebook requires you to use an access token. This must be included when you run facebook-export. You can get one at https://developers.facebook.com/tools/explorer. Be sure to check "user_groups". [More information on how to setup this is available here](https://github.com/KyleAMathews/facebook-export#export-data-from-facebook).
