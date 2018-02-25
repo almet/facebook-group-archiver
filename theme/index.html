@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+    <title>CRAB - Archives</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="./assets/css/knacss.css"/>
+    <link rel="stylesheet" href="./assets/css/main.css"/>
+  </head>
+
+  <body>
+
+<div id="content">
+  <div id="entries">
+{% for entry in entries %}
+{{ entry.content }}
+{{ entry.author.name }}
+{{ entry.date }}
+<br />
+{% if entry.comments %}
+<h5>Comments</h5>
+
+<ul>
+{% for comment in entry.comments %}
+<li>{{ comment.content }} -- {{ comment.author.name }}</li>
+{% endfor %}
+</ul>
+{% endif %}
+<hr />
+{% endfor %}
+</div>
+</div>
+</body>
+</html>
