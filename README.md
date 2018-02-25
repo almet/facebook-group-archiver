@@ -12,11 +12,10 @@ Facebook group.
 
 ## Dependencies
 
-In order to use it, you need to use the [facebook-export tool](https://github.com/KyleAMathews/facebook-export) to generate a data archive.
-
-Once the tool is installed, here is how you can generate your data:
+To access your data through the Facebook API, Facebook requires you to use an access token. This must be included when you run facebook-export. You can get one at https://developers.facebook.com/tools/explorer. Be sure to check "user_groups". [More information on how to setup this is available here](https://github.com/KyleAMathews/facebook-export#export-data-from-facebook).
 
 ```bash
+npm install -g facebook-export
 facebook-export -a key -l # list the group ids.
 facebook-export -a key -a groupid
 facebook-analyze -g groupid -s > data.json
@@ -27,8 +26,8 @@ You need to install this. After checking-out the code, you need to install
 it in a virtual environment:
 
 ```bash
-  virtualenv .venv
-  .venv/bin/pip install -r requirements.txt
+virtualenv .venv
+.venv/bin/pip install -r requirements.txt
 ```
 
 ## Generating the website
@@ -36,5 +35,5 @@ it in a virtual environment:
 Once everything is done, you can generate the website using::
 
 ```bash
-  .venv/bin/python scrap.py --output output --data content/data.json
+.venv/bin/python scrap.py --output output --data content/data.json
 ```
