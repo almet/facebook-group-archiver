@@ -10,7 +10,7 @@ some point.
 This tool tries to solve this problem by generating an HTML website out of a
 Facebook group.
 
-## Setup
+## Dependencies
 
 In order to use it, you need to use the [facebook-export tool](https://github.com/KyleAMathews/facebook-export) to generate a data archive.
 
@@ -20,4 +20,16 @@ Once the tool is installed, here is how you can generate your data:
   $ facebook-export -a key -a groupid
   $ facebook-analyze -g groupid -s > data.json
 
+## Setup
+
+You need to install this. After checking-out the code, you need to install
+it in a virtual environment:
+
+  $ virtualenv .venv
+  $ .venv/bin/pip install -r requirements.txt
+
 ## Generating the website
+
+Once everything is done, you can generate the website using::
+
+  $ .venv/bin/python scrap.py --output output --data content/data.json
