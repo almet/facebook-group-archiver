@@ -24,6 +24,7 @@ class Author(object):
 
 class Comment(object):
     def __init__(self, item):
+        self.id = item['id']
         self.content = None
         self.picture = item['picture'] if 'picture' in item else None
         self.content = bleach.linkify(item['message']) if 'message' in item else None
@@ -34,6 +35,7 @@ class Comment(object):
 
 class Entry(object):
     def __init__(self, item):
+        self.id = item['id']
         self.picture = item['picture'] if 'picture' in item else None
         self.content = bleach.linkify(item['message']) if 'message' in item else None
         self.author = Author(item['from']) if 'from' in item else None
@@ -94,6 +96,7 @@ def copy(source, destination):
 
 
 def download(url, output_path):
+    print("downloading %s" % url)
     if not os.path.exists(output_path):
         os.makedirs(output_path)
     m = hashlib.md5()
@@ -109,24 +112,39 @@ def download(url, output_path):
     return filename
 
 
+def get_attachments(item, image_path, token):
+    resp = requests.get('https://graph.facebook.com/v2.12/%s/attachments' % item.id, params={
+        'access_token': token,
+    })
+    if 'data' in resp.json() and resp.json()['data']:
+        data = resp.json()['data']
+        item.pictures = [get_from_type(d, image_path) for d in data][0]
+
+
+def get_from_type(item, image_path):
+    if item['type'] == 'photo':
+        return [download(item['media']['image']['src'], image_path)]
+    elif item['type'] == 'album':
+        return [get_from_type(d, image_path)[0] for d in item['subattachments']['data']]
+
+
 def parse_data(data):
     entries = [Entry(d) for d in data]
     entries.sort(key=attrgetter('date'))
     return entries
 
 
-def download_pictures(entries, output_path):
+def enhance_entries(entries, output_path, token):
+    pictures_path = os.path.join(output_path, 'pictures')
     for entry in entries:
-        if entry.picture:
-            new_url = download(entry.picture, os.path.join(output_path, 'pictures'))
-            entry.picture = 'pictures/%s' % new_url
+        get_attachments(entry, pictures_path, token)
 
 
-def generate_archive(data, output_path):
+def generate_archive(data, output_path, token):
     with open(data, 'r') as f:
         data_json = json.load(f)
     entries = parse_data(data_json)
-    download_pictures(entries, output_path)
+    enhance_entries(entries, output_path, token)
     render_template(output_path, 'index.html', 'index.html', entries=entries)
 
 
@@ -142,11 +160,12 @@ def parse_args():
     parser.add_argument('--output', dest='output_path',
                         default='output',
                         help='Path where to output the generated files.')
+    parser.add_argument('--token', dest='token', help='the access token from Facebook graph API.')
     return parser.parse_args()
 
 
 if __name__ == '__main__':
     args = parse_args()
-    generate_archive(args.data, args.output_path)
+    generate_archive(args.data, args.output_path, args.token)
     copy_assets(args.output_path)
     print('')

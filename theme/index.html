@@ -16,9 +16,14 @@
 <div id="content">
   <div id="entries">
 {% for entry in entries %}
-{{ entry.content }}
-{{ entry.author.name }}
-{{ entry.date }}
+  {% if entry.pictures %}
+  {% for pic in entry.pictures %}
+  <img src="pictures/{{ pic }}" />
+  {% endfor %}
+  {% endif %}
+  {{ entry.content }}
+  {{ entry.author.name }}
+  {{ entry.date }}
 <br />
 {% if entry.comments %}
 <h5>Comments</h5>
